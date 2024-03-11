@@ -1,0 +1,74 @@
+version: '3'
+services:
+  lb:
+    image: dockercloud/haproxy
+    links:
+      - api-gateway
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+      - 443:443
+    restart: on-failure
+
+  database:
+    image: postgres:16
+    restart: on-failure
+    hostname: postgresql
+    expose:
+      - 5432
+    environment:
+      POSTGRES_DB: rides
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: whuproject
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgresql:/var/lib/postgresql/data
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: development.Dockerfile
+    image: ride-sharing-service/api-gateway:dev
+    restart: on-failure
+    environment:
+      - VIRTUAL_HOST=api-gateway.app.com
+    ports:
+      - 3000:3000
+    volumes:
+      - ./api-gateway:/app/src
+      - ./models:/models
+
+  service-billing:
+    build:
+      context: .
+      dockerfile: development.Dockerfile
+    image: ride-sharing-service/service-billing:dev
+    restart: on-failure
+    volumes:
+      - ./service-billing:/app/src
+      - ./models:/models
+
+  service-passenger:
+    build:
+      context: .
+      dockerfile: development.Dockerfile
+    image: ride-sharing-service/service-passenger:dev
+    restart: on-failure
+    volumes:
+      - ./service-passenger:/app/src
+      - ./models:/models
+
+  service-driver:
+    build:
+      context: .
+      dockerfile: development.Dockerfile
+    image: ride-sharing-service/service-driver:dev
+    restart: on-failure
+    volumes:
+      - ./service-driver:/app/src
+      - ./models:/models
+
+volumes:
+  models:

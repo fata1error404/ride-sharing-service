@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Passenger start ride </title>
+
+    <style>
+        .button {
+            position: absolute;
+            left: calc(50% - 7.5rem);
+            top: 47rem;
+            width: 15rem;
+            border: none;
+            border-radius: 1rem;
+            padding: 1rem 2rem;
+
+            font-size: 1.5rem;
+        }
+
+        .leaflet-routing-container {
+            display: none;
+        }
+
+        .leaflet-control-zoom-in,
+        .leaflet-control-zoom-out {
+            opacity: 0.5;
+        }
+
+        #map {
+            border: 0.5rem solid #f0f0f0;
+            border-radius: 1.5rem;
+        }
+    </style>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <div
+            style="display: flex; flex-direction: column; align-items: center; width: 26rem; height: 50rem; border: 0.6rem solid #f0f0f0; border-radius: 3rem; margin-top: 2rem;">
+            <i class="fa fa-check" id="check"
+                style="position: absolute; left: calc(50% + 2rem); top: 6.5rem; color: #f0f0f0; font-size: 2.5rem;"></i>
+
+            <p id="message" style="width: 23rem; font-size: 1.3rem; margin-left: 13.5rem; margin-top: 4rem;"> Confirmed
+            </p>
+
+            <div style="color: gray; line-height: 1.5rem;">
+                <div id="id"> </div>
+                <div id="destination"> </div>
+                <div id="date"> </div>
+                <div id="type"> </div>
+                <div id="passengers"> </div>
+            </div>
+
+            <div id="map" style="width: 20rem; height: 25rem; margin-top: 2rem;"></div>
+
+            <div id="time_message" style="font-size: 1.3rem; margin-left: -10rem; margin-top: 1rem;"> Time before start:
+            </div>
+            <div id="timer" style="position: absolute; left: calc(50% + 0.5rem); top: 43.7rem; font-size: 1rem;"> </div>
+            <div id="stopwatch"
+                style="display: none; position: absolute; left: calc(50% + 0.5rem); top: 43.7rem; font-size: 1rem;">
+            </div>
+            <div id="price" style="position: absolute; left: calc(50% + 0.5rem); top: 43.7rem; font-size: 1rem;">
+            </div>
+
+            <div id="route" style="font-size: 1.3rem; margin-left: -12.3rem; margin-top: 0.5rem;"> Route length: </div>
+            <div id="length" style="position: absolute; left: calc(50% + 0.5rem); top: 45.7rem; font-size: 1rem;">
+            </div>
+
+            <form method="POST" action="/passenger/pay">
+                <input id="1" type="hidden" name="id" value="">
+                <input id="2" type="hidden" name="price" value="">
+                <button hidden id="pay_button" class="button" type="submit"> Pay </button>
+            </form>
+
+            <!-- Stopwatch -->
+            <script>
+                var stopwatchInterval;
+                var stopwatchElement;
+
+                function startStopwatch() {
+                    stopwatchElement = document.getElementById('stopwatch');
+                    var seconds = 0;
+
+                    function updateStopwatch() {
+                        seconds++;
+                        var minutes = Math.floor(seconds / 60);
+                        var remainingSeconds = seconds % 60;
+
+                        var displayMinutes = minutes > 0 ? minutes + 'm ' : '';
+
+                        stopwatchElement.innerHTML = displayMinutes + remainingSeconds + 's';
+                    }
+
+                    stopwatchInterval = setInterval(updateStopwatch, 1000)
+                }
+            </script>
+
+            <!-- Checking ride status every 5 seconds -->
+            <script>
+                const { id, destination, date, type, passengers } = {
+                    id: document.getElementById('id').innerText.trim(),
+                    destination: document.getElementById('destination').innerText.trim(),
+                    date: document.getElementById('date').innerText.trim(),
+                    type: document.getElementById('type').innerText.trim(),
+                    passengers: document.getElementById('passengers').innerText.trim()
+                };
+
+                function checkStatus() {
+                    fetch(`/check-status?id=${id}`)
+                        .then(response => response.json())
+                        .then(async data => {
+                            if (data.status === 'started') {
+                                document.getElementById('message').innerText = 'Your ride has started! Have a nice trip.';
+                                document.getElementById('message').style.marginLeft = '3rem';
+                                document.getElementById('time_message').innerText = 'Ride duration:';
+                                document.getElementById('time_message').style.marginLeft = '-12rem';
+                                check.style.display = 'none';
+
+                                document.getElementById('timer').style.display = 'none';
+                                document.getElementById('stopwatch').style.display = 'block';
+                                startStopwatch();
+                            }
+                            else if (data.status === 'finished') {
+                                document.getElementById('message').innerText = 'Thank you for the ride. Proceed to payment.';
+                                document.getElementById('message').style.marginLeft = '0rem';
+                                document.getElementById('time_message').innerText = 'Amount to pay:';
+                                document.getElementById('time_message').style.marginLeft = '-11.2rem';
+                                document.getElementById('stopwatch').style.display = 'none';
+                                document.getElementById('price').innerText = parseInt(stopwatchElement.innerText.replace('s', ''), 10) * 2 / passengers + ' $';
+
+                                document.getElementById('1').value = id;
+                                document.getElementById('2').value = parseInt(stopwatchElement.innerText.replace('s', ''), 10) * 2;
+
+                                pay_button.hidden = false;
+
+                                check.style.display = 'none';
+                                document.getElementById('route').style.display = 'none';
+                                document.getElementById('length').style.display = 'none';
+
+                                clearInterval(checkInterval);
+                            }
+                        });
+                }
+
+                const checkInterval = setInterval(checkStatus, 1000);
+            </script>
+
+            <!-- Leaflet Map -->
+            <script>
+                var map = L.map('map').setView([55.753215, 37.622504], 10);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                map.attributionControl.setPrefix('');
+
+                var destinationAddress = document.getElementById('destination').innerText.trim();
+
+                fetch('https://api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURIComponent(destinationAddress) + '.json?access_token=pk.eyJ1IjoidmFuMTc5IiwiYSI6ImNsdGMzeHN0aDFtbWsybnJ4cXUyd3JyNm8ifQ.iQwBoRfufOEBm-ZYax5bGw')
+                    .then(response => response.json())
+                    .then(data => {
+                        var coordinates = data.features[0].geometry.coordinates;
+
+                        L.Routing.control({
+                            waypoints: [
+                                L.latLng(55.753215, 37.622504),
+                                L.latLng(coordinates[1], coordinates[0])
+                            ],
+                            lineOptions: { styles: [{ color: '#0098EA', opacity: 0.75, weight: 3.5 }] },
+                        })
+                            .addTo(map)
+                            .on('routeselected', function (e) {
+                                var routeLength = e.route.summary.totalDistance;
+                                var routeLengthKm = (routeLength / 1000).toFixed(2);
+                                document.getElementById('length').innerText = routeLengthKm + ' км';
+                            });
+                    });
+            </script>
+
+            <!-- Timer -->
+            <script>
+                var date_timer = document.getElementById('date').innerText.trim();
+                var countDownDate = new Date(date_timer).getTime();
+
+                var x = setInterval(function () {
+                    var now = new Date().getTime();
+                    var distance = countDownDate - now;
+
+                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    document.getElementById("timer").innerHTML = days + "d " + hours + "h "
+                        + minutes + "m " + seconds + "s ";
+
+                    if (distance < 0) {
+                        clearInterval(x);
+                        document.getElementById("timer").innerHTML = "";
+                    }
+                }, 230);
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>

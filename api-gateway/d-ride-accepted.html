@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Order accepted </title>
+
+    <style>
+        .button {
+            position: absolute;
+            left: calc(50% - 7.5rem);
+            bottom: 6rem;
+            width: 15rem;
+            border: none;
+            border-radius: 1rem;
+            padding: 1rem 2rem;
+
+            font-size: 1.5rem;
+        }
+
+        .loader {
+            border: 0.5rem solid rgba(0, 0, 0, 0.1);
+            border-top: 0.5rem solid lightgray;
+            border-radius: 50%;
+            width: 5rem;
+            height: 5rem;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <div
+            style="display: flex; flex-direction: column; align-items: center; width: 26rem; height: 50rem; border: 0.6rem solid #f0f0f0; border-radius: 3rem; margin-top: 2rem;">
+            <i class="fa fa-car" id="car"
+                style="display: none; position: absolute; left: calc(50% + 0.8rem); top: 6.8rem; color: #f0f0f0; font-size: 2rem;"></i>
+
+            <div id="message" style="width: 23rem; font-size: 1.3rem; margin-left: 5rem; margin-top: 4rem;"> Awaiting
+                passenger
+                confirmation.. </div>
+
+            <div id="sub_message" hidden
+                style="width: 23rem; font-size: 1.3rem; margin-left: 5rem; margin-top: 0.8rem;"> Start the ride at the
+                specified time. </div>
+
+            <div id="id"> </div>
+            <div class="loader" id="loader"> </div>
+
+            <form method="POST" action="/driver/start">
+                <input id="1" type="hidden" name="id" value="">
+                <button id="start_button" hidden class="button" type="submit"> Start </button>
+            </form>
+
+            <!-- Checking ride status every 5 seconds -->
+            <script>
+                const id = document.getElementById('id').innerText.trim()
+                document.getElementById('1').value = id;
+
+                function checkStatus() {
+                    fetch(`/check-status?id=${id}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'confirmed') {
+                                document.getElementById('message').innerText = 'Order confirmed';
+                                sub_message.hidden = false;
+                                car.style.display = 'block';
+                                loader.hidden = true;
+                                start_button.hidden = false;
+
+                                clearInterval(checkInterval);
+                            }
+                        });
+                }
+
+                const checkInterval = setInterval(checkStatus, 5000);
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>

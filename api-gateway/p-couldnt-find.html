@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Search failed </title>
+
+    <style>
+        .button {
+            position: absolute;
+            left: calc(50% - 7.5rem);
+            bottom: 6rem;
+            width: 15rem;
+            border: none;
+            border-radius: 1rem;
+            padding: 1rem 2rem;
+
+            font-size: 1.5rem;
+        }
+
+        .back_button {
+            background-color: transparent;
+            position: relative;
+            top: 1rem;
+            right: -9.5rem;
+            width: 4rem;
+            height: 4rem;
+            border: none;
+            border-radius: 50%;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <div
+            style="display: flex; flex-direction: column; align-items: center; width: 26rem; height: 50rem; border: 0.6rem solid #f0f0f0; border-radius: 3rem; margin-top: 2rem;">
+            <button class="back_button" id="back">
+                <i class="fa fa-arrow-left" style="color: #f0f0f0; font-size: 2.5rem;"></i>
+            </button>
+
+            <div style="width: 23rem; font-size: 1.3rem; margin-left: 1.5rem; margin-top: 2rem;"> No shared rides
+                available at the moment. </div>
+
+            <div style="width: 23rem; font-size: 1.3rem; margin-left: 1.5rem; margin-top: 0.5rem;"> Create your own and
+                find travel companions. </div>
+
+            <div style="color: gray; margin-left: -13.7rem; margin-top: 0.4rem;"> Up to 2 passengers. </div>
+
+            <div hidden>
+                <div id="name"> </div>
+                <div id="destination"> </div>
+                <div id="date"> </div>
+            </div>
+
+            <form method="GET" action="/passenger/create-shared">
+                <input id="1" type="hidden" name="name" value="">
+                <input id="2" type="hidden" name="destination" value="">
+                <input id="3" type="hidden" name="date" value="">
+                <input id="4" type="hidden" name="passengers" value="1">
+                <button class="button" type="submit"> Find your ride </button>
+            </form>
+
+            <script type="text/javascript">
+                document.getElementById("back").onclick = function () {
+                    location.href = "http://localhost:3000/passenger/";
+                };
+            </script>
+
+            <script>
+                const { name, destination, date } = {
+                    name: document.getElementById('name').innerText.trim(),
+                    destination: document.getElementById('destination').innerText.trim(),
+                    date: document.getElementById('date').innerText.trim()
+                };
+
+                document.getElementById('1').value = name;
+                document.getElementById('2').value = destination;
+                document.getElementById('3').value = date;
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>

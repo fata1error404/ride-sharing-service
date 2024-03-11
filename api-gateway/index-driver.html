@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Driver </title>
+
+    <style>
+        .text {
+            width: 23rem;
+            font-size: 1.3rem;
+            margin-left: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .button {
+            position: absolute;
+            left: calc(50% - 7.5rem);
+            bottom: 6rem;
+            width: 15rem;
+            border: none;
+            border-radius: 1rem;
+            padding: 1rem 2rem;
+
+            font-size: 1.5rem;
+        }
+
+        .back_button {
+            background-color: transparent;
+            position: relative;
+            top: 1rem;
+            right: -7.5rem;
+            width: 4rem;
+            height: 4rem;
+            border: none;
+            border-radius: 50%;
+        }
+
+        td,
+        th {
+            height: 1.7rem;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <div
+            style="display: flex; flex-direction: column; align-items: center; width: 26rem; height: 50rem; border: 0.6rem solid #f0f0f0; border-radius: 3rem; margin-top: 2rem;">
+            <div style="display: flex;">
+                <form method="GET" action="/driver">
+                    <button class="back_button" style="right: 7.5rem; top: 1.2rem">
+                        <i class="fa fa-refresh" style="color: #f0f0f0; font-size: 2.5rem;"></i>
+                    </button>
+                </form>
+
+                <button class="back_button" id="back">
+                    <i class="fa fa-arrow-left" style="color: #f0f0f0; font-size: 2.5rem;"></i>
+                </button>
+            </div>
+
+            <p style="font-size: 1.3rem;"> Available orders </p>
+            <div> To replace </div>
+
+            <form id="myForm" method="POST" action="/driver">
+                <input type="hidden" name="id" id="id">
+                <input type="hidden" name="destination" id="destination">
+                <input type="hidden" name="date" id="date">
+                <input type="hidden" name="type" id="type">
+                <button class="button" type="submit" disabled> Take the order </button>
+            </form>
+
+            <script type="text/javascript">
+                document.getElementById("back").onclick = function () {
+                    location.href = "http://localhost:3000/";
+                };
+            </script>
+
+            <script>
+                // checbox selection + submit button control
+                document.addEventListener("DOMContentLoaded", function () {
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    const button = document.querySelector('.button');
+
+                    checkboxes.forEach(checkbox => {
+                        checkbox.addEventListener('click', function () {
+                            // unselecting all other checkboxes
+                            checkboxes.forEach(otherCheckbox => {
+                                if (otherCheckbox !== this) {
+                                    otherCheckbox.checked = false;
+                                }
+                            });
+
+                            // checking if at least 1 checkbox is selected
+                            if ([...checkboxes].some(cb => cb.checked)) {
+                                button.disabled = false;
+                            } else {
+                                button.disabled = true;
+                            }
+                        });
+                    });
+                });
+            </script>
+
+            <script>
+                // saving data from hidden input for POST request
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+                checkboxes.forEach((checkbox, index) => {
+                    checkbox.addEventListener('change', function () {
+                        const row = checkbox.parentNode.parentNode;
+                        const columns = row.getElementsByTagName('td');
+
+                        document.getElementById('id').value = columns[0].textContent;
+                        document.getElementById('destination').value = columns[2].textContent;
+                        document.getElementById('date').value = columns[3].textContent;
+                        document.getElementById('type').value = columns[4].textContent;
+                    });
+                });
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>

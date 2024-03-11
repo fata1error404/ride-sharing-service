@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Passenger </title>
+
+    <style>
+        .button {
+            position: absolute;
+            left: calc(50% - 7.5rem);
+            top: 47rem;
+            width: 15rem;
+            border: none;
+            border-radius: 1rem;
+            padding: 1rem 2rem;
+
+            font-size: 1.5rem;
+        }
+
+        .back_button {
+            background-color: transparent;
+            position: relative;
+            top: 1rem;
+            right: -9.5rem;
+            width: 4rem;
+            height: 4rem;
+            border: none;
+            border-radius: 50%;
+        }
+
+        .input {
+            background-color: #f0f0f0 !important;
+            width: 21.5rem;
+            height: 2.7rem;
+            border: none;
+            border-radius: 0.7rem;
+            outline: none;
+            padding-left: 1rem;
+
+            font-size: 1rem; 
+        }
+
+        input:-webkit-autofill {
+            background-color: #f0f0f0 !important;
+            -webkit-box-shadow: 0 0 0 1000px #f0f0f0 inset;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <div
+            style="display: flex; flex-direction: column; align-items: center; width: 26rem; height: 50rem; border: 0.6rem solid #f0f0f0; border-radius: 3rem; margin-top: 2rem;">
+            <button class="back_button" id="back">
+                <i class="fa fa-arrow-left" style="color: #f0f0f0; font-size: 2.5rem;"></i>
+            </button>
+
+
+            <form method="POST" action="/passenger">
+                <p style="font-size: 1.3rem;"> Your name </p>
+                <input id="name_input" class="input" name="name" required placeholder="Enter text">
+
+                <p style="font-size: 1.3rem;"> Enter destination location </p>
+                <input id="destination_input" class="input" name="destination" required placeholder="Enter text">
+
+                <div style="display: flex; align-items: center; gap: 5.3rem; margin-top: 3rem;">
+                    <div style="font-size: 1.3rem; margin-left: 0rem;"> Pick travel date </div>
+                    <input id="date_input" name="travel_date" type="date" required
+                        style="background-color: #f0f0f0; width: 8rem; height: 2.7rem; border: none; border-radius: 0.7rem; outline: none; padding-left: 1rem; padding-right: 0.5rem;">
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 4.5rem; margin-top: 2rem;">
+                    <label for="types" style="font-size: 1.3rem; margin-left: 0rem;"> Select type of ride </label>
+                    <select id="ride_type" name="ride_type"
+                        style="background-color: #f0f0f0; width: 9rem; height: 2rem; border: none; border-radius: 0.5rem; outline: none; padding-left: 0.5rem;">
+                        <option value="" selected> Not selected </option>
+                        <option value="option1"> Ride Sharing </option>
+                        <option value="option2"> Economy </option>
+                        <option value="option3"> Business </option>
+                        <option value="option4"> Courier </option>
+                    </select>
+                </div>
+
+                <button class="button" id="submit" type="submit" disabled> Find your ride </button>
+            </form>
+
+            <script type="text/javascript">
+                document.getElementById("back").onclick = function () {
+                    location.href = "http://localhost:3000/";
+                };
+            </script>
+
+            <!-- Checking status of Submit button -->
+            <script>
+                const nameInput = document.getElementById('name_input');
+                const destinationInput = document.getElementById('destination_input');
+                const dateInput = document.getElementById('date_input');
+                const rideType = document.getElementById('ride_type');
+                const submitButton = document.getElementById('submit');
+
+                nameInput.addEventListener('input', toggleButtonState);
+                destinationInput.addEventListener('input', toggleButtonState);
+                dateInput.addEventListener('input', toggleButtonState);
+                rideType.addEventListener('change', toggleButtonState);
+
+                function toggleButtonState() {
+                    if (nameInput.value.trim() !== '' && destinationInput.value.trim() !== '' && dateInput.value.trim() !== '' && rideType.value !== '') {
+                        submitButton.removeAttribute('disabled');
+                    } else {
+                        submitButton.setAttribute('disabled', 'true');
+                    }
+                }
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>

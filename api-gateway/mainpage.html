@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Ride Sharing Service </title>
+
+    <style>
+        .button {
+            width: 11rem;
+            border: none;
+            border-radius: 1rem;
+            padding: 1rem 2rem;
+
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <div
+            style="display: flex; flex-direction: column; align-items: center; width: 26rem; height: 50rem; border: 0.6rem solid #f0f0f0; border-radius: 3rem; margin-top: 2rem;">
+            <p style="font-size: 2rem; font-weight: 700; margin-top: 3rem;"> Ride sharing service </p>
+            <p style="font-size: 1.3rem; margin-left: -14rem;"> Select your role: </p>
+
+            <div style="display: flex; gap: 1rem">
+                <button class="button" id="passenger"> Passenger </button>
+                <button class="button" id="driver"> Driver </button>
+            </div>
+
+            <p style="color: grey; width: 20rem; line-height: 1.4rem; margin-left: -2rem; margin-top: 5rem;">
+                Implementation of microservices architecture </br> ( WHU evaluation task )
+                </br>
+                </br>
+                Available microservices and their functionality:
+                1. Passenger management </br>
+                <span style="position: absolute; font-size: 0.8rem; margin-left: 1.2rem; margin-top: -0.3rem;">
+                    Find, Confirm, Cancel, Search
+                </span>
+                </br>
+                2. Driver management </br>
+                <span style="position: absolute; font-size: 0.8rem; margin-left: 1.2rem; margin-top: -0.3rem;">
+                    Show available orders, Take an order, Start a ride, Finish a ride
+                </span>
+                </br>
+                3. Billing </br>
+                <span style="position: absolute; font-size: 0.8rem; margin-left: 1.2rem; margin-top: -0.3rem;">
+                    Pay, Receive money
+                </span>
+                </br>
+            </p>
+            <div style="margin-left: -13.5rem;"> ©2024 Ivan Iazykov</div>
+
+            <script type="text/javascript">
+                document.getElementById("passenger").onclick = function () {
+                    location.href = "http://localhost:3000/passenger";
+                };
+            </script>
+
+            <script type="text/javascript">
+                document.getElementById("driver").onclick = function () {
+                    location.href = "http://localhost:3000/driver";
+                };
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>
